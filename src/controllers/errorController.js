@@ -9,10 +9,11 @@ const handleDuplicateField = (err) => {
   return new AppError(message, 400);
 };
 
-const handleJWTEpiresError = (error) => {
+const handleJwtError = () =>
+  new AppError("Invalid Token, Please login again", 401);
 
-  return new AppError("Your Session is Expired. Please Login Again", 401);
-}
+const handleJWTEpiresError = () =>
+  new AppError("Your Session is Expired. Please Login Again", 401);
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -24,23 +25,16 @@ const sendErrorDev = (err, res) => {
 };
 
 const sendErrorProd = (err, res) => {
-  // Operational , trusted error: send message to client
   if (err.isOperational) {
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
-      stack: err.stack
     });
-
-    // programming or other unknown errors
   } else {
-    // log error
     console.error("Error 🔥", err);
-
-    // send generic message
     res.status(500).json({
       status: "error",
-      message: "something went very wrong!!",
+      message: "Something went very wrong!",
     });
   }
 };
@@ -54,8 +48,10 @@ module.exports = (err, __, res, ___) => {
   } else if (process.env.NODE_ENV === "production") {
     let error = { ...err };
 
-    if (error.errorResponse && error.errorResponse.code === 11000) error = handleDuplicateField(error);
-    if (error.name === "TokenExpiredError") error = handleJWTEpiresError(error);
+    if (error.errorResponse && error.errorResponse.code === 11000)
+      error = handleDuplicateField(error);
+    if (error.name === "JsonWebTokenError") error = handleJwtError(error);
+    if (error.name === "TokenExpiredError") error = handleJWTEpiresError();
 
     sendErrorProd(error, res);
   }
