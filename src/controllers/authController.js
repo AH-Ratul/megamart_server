@@ -1,3 +1,4 @@
+const { promisify } = require("util");
 const User = require("../models/userModel");
 const tryCatch = require("../utils/tryCatch");
 const AppError = require("../utils/appError");
@@ -48,6 +49,37 @@ exports.login = tryCatch(async (req, res, next) => {
     token,
     message: "Login Successfull",
   });
+});
+
+exports.protect = tryCatch(async (req, res, next) => {
+  // getting token and check of it's here
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  if (!token) {
+    next(new AppError("Your are not Logged in, Please Login.", 401));
+  }
+
+  // verify token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  // check if user still exists
+  const freshUser = await User.findById(decoded.id);
+  if (!freshUser) {
+    next(
+      new AppError(
+        "The user belonging with this token is no longer exists",
+        401
+      )
+    ); 
+  }
+
+  next();
 });
 
 exports.getUser = tryCatch(async (__, res, next) => {
