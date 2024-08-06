@@ -10,6 +10,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  //console.log(req.headers);
+
+  next();
+});
+
 // api router
 app.use("/api/v1", appRouter);
 
