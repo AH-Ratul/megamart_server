@@ -4,7 +4,8 @@
   "description": "MegaMart e-commerce server",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:dev": "cross-env NODE_ENV=development nodemon D:/project/megamart/server/src/server.js",
+    "start:prod": "cross-env NODE_ENV=production nodemon D:/project/megamart/server/src/server.js"
   },
   "author": "AHR",
   "license": "ISC",
@@ -17,5 +18,9 @@
     "mongoose": "^8.5.2",
     "nodemon": "^3.1.4",
     "validator": "^13.12.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "dotenv-cli": "^7.4.2"
   }
 }
