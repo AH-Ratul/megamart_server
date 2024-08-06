@@ -1,3 +1,4 @@
+require('./config');
 const app = require("./app");
 const mongoose = require("mongoose");
 require("dotenv").config();
@@ -16,7 +17,7 @@ mongoose
 
 // start the server
 app.listen(PORT, () => {
-  console.log(`Server is Listenign on Port ${PORT}`);
+  console.log(`Server is Listening on Port ${PORT}`);
 });
 
 // handling uncaught expression
