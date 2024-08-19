@@ -47,6 +47,7 @@ module.exports = (err, __, res, ___) => {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === "production") {
     let error = { ...err };
+    error.message = err.message;
 
     if (error.errorResponse && error.errorResponse.code === 11000)
       error = handleDuplicateField(error);
