@@ -4,12 +4,15 @@ const User = require("../models/userModel");
 const tryCatch = require("../utils/tryCatch");
 const AppError = require("../utils/appError");
 
+
+// MANAGE JWT TOKEN
 const signToken = (id) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
     expiresIn: process.env.EXPIRES_IN,
   });
 };
 
+//------------ SIGN UP ------------
 exports.signup = tryCatch(async (req, res) => {
   const newUser = await User.create(req.body);
 
@@ -25,6 +28,7 @@ exports.signup = tryCatch(async (req, res) => {
   });
 });
 
+//------------ LOG IN ------------
 exports.login = tryCatch(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -51,6 +55,7 @@ exports.login = tryCatch(async (req, res, next) => {
   });
 });
 
+// ---------- TO PROTECT DATA -------------
 exports.protect = tryCatch(async (req, res, next) => {
   // getting token and check of it's here
   let token;
