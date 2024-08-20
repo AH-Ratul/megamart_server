@@ -4,6 +4,19 @@ const userController = require("../../controllers/userController");
 
 userRouter.post("/signup", authController.signup);
 userRouter.post("/login", authController.login);
+
+userRouter.post("/forgetPassword", authController.forgetPassword);
+userRouter.patch("/resetPassword/:token", authController.resetPassword);
+
 userRouter.get("/get", authController.protect, userController.getUser);
+
+userRouter
+  .route("/get/:id")
+  .get(authController.protect, userController.getUserById)
+  .delete(
+    authController.protect,
+    authController.restrictedTo("admin"),
+    userController.deleteUser
+  );
 
 module.exports = userRouter;
