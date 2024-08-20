@@ -42,7 +42,7 @@ exports.login = tryCatch(async (req, res, next) => {
   const isMatch = await user.comparePassword(password);
 
   if (!user || !isMatch) {
-    return next(new AppError("Invalid email and password", 401));
+    return next(new AppError("Invalid Email or Password", 401));
   }
 
   // if all ok, send token to client
@@ -96,16 +96,3 @@ exports.protect = tryCatch(async (req, res, next) => {
   next();
 });
 
-exports.getUser = tryCatch(async (__, res, next) => {
-  const get = await User.find();
-
-  if (!get) {
-    next(new AppError("User not found", 404));
-  }
-
-  res.status(200).json({
-    status: "success",
-    results: get.length,
-    data: get,
-  });
-});
