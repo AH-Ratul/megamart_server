@@ -15,6 +15,7 @@ const handleJwtError = () =>
 const handleJWTEpiresError = () =>
   new AppError("Your Session is Expired. Please Login Again", 401);
 
+// SEND ERROR DETAILS IN DEVELOPMENT
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -24,6 +25,7 @@ const sendErrorDev = (err, res) => {
   });
 };
 
+// SEND VALID ERROR MESSAGE IN PRODUCTION
 const sendErrorProd = (err, res) => {
   if (err.isOperational) {
     res.status(err.statusCode).json({
