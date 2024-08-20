@@ -1,5 +1,10 @@
 const AppError = require("../utils/appError");
 
+const handleCastError = (err) => {
+  const message = `Invalid ${err.path}: ${err.value}`;
+  return new AppError(message, 400);
+}
+
 const handleDuplicateField = (err) => {
   const regex = /(["'])(\\?.)*?\1/;
   const value = err.errorResponse.errmsg.match(regex)[0];
@@ -51,6 +56,7 @@ module.exports = (err, __, res, ___) => {
     let error = { ...err };
     error.message = err.message;
 
+    if(error.name === 'CastError' || error.statusCode === 500) error = handleCastError(error);
     if (error.errorResponse && error.errorResponse.code === 11000)
       error = handleDuplicateField(error);
     if (error.name === "JsonWebTokenError") error = handleJwtError(error);
