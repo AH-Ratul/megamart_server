@@ -45,7 +45,7 @@ exports.updateUser = tryCatch(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
     return next(
       new AppError(
-        "Password is not allow for update here, Please go to Update password/Forget password!",
+        "Password is not allow for update here, Please go to Update password",
         400
       )
     );
