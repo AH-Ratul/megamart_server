@@ -8,6 +8,18 @@ userRouter.post("/login", authController.login);
 userRouter.post("/forgetPassword", authController.forgetPassword);
 userRouter.patch("/resetPassword/:token", authController.resetPassword);
 
+userRouter.patch(
+  "/updatePassword",
+  authController.protect,
+  authController.updatePassword
+);
+
+userRouter.patch(
+  "/updateUser",
+  authController.protect,
+  userController.updateUser
+);
+
 userRouter.get("/get", authController.protect, userController.getUser);
 
 userRouter
