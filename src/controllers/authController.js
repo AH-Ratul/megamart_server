@@ -94,6 +94,7 @@ exports.protect = tryCatch(async (req, res, next) => {
   next();
 });
 
+//----------- RESTRICTED TO ADMIN -------------
 exports.restrictedTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
@@ -145,6 +146,7 @@ exports.forgetPassword = tryCatch(async (req, res, next) => {
   }
 });
 
+//---------------- RESET PASSWORD ----------------
 exports.resetPassword = tryCatch(async (req, res, next) => {
   // Get user based on token
   const hashedToken = crypto
@@ -176,6 +178,7 @@ exports.resetPassword = tryCatch(async (req, res, next) => {
   });
 });
 
+//------------------ UPDATE PASSWORD ---------------
 exports.updatePassword = tryCatch(async (req, res, next) => {
   // get user
   const user = await User.findById(req.user.id).select("+password");
