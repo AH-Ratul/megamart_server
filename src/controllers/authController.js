@@ -13,20 +13,24 @@ const signToken = (id) => {
   });
 };
 
+const createSendToken = (user, statusCode, message, res) => {
+  const token = signToken(user._id);
+
+  res.status(statusCode).json({
+    status: "success",
+    message,
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
 //------------ SIGN UP ------------
 exports.signup = tryCatch(async (req, res) => {
   const newUser = await User.create(req.body);
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
-    status: "success",
-    token,
-    message: "User Created",
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(newUser, 201, "User Created", res);
 });
 
 //------------ LOG IN ------------
@@ -46,13 +50,7 @@ exports.login = tryCatch(async (req, res, next) => {
   }
 
   // if all ok, send token to client
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: "success",
-    token,
-    message: "Login Successfull",
-  });
+  createSendToken(user, 200, "Login Successfull", res);
 });
 
 // ---------- TO PROTECT DATA -------------
@@ -193,12 +191,5 @@ exports.updatePassword = tryCatch(async (req, res, next) => {
   await user.save();
 
   // loged user in, send token
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: "success",
-    message: "Your password is updated",
-    token,
-    user,
-  });
+  createSendToken(user, 200, "Your password is updated", res);
 });
