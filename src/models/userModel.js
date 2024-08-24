@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
     required: [true, "Email is required"],
     unique: true,
     lowercase: true,
+    validate: [validator.isEmail, 'Please give a valid email.']
   },
   phone: {
     type: Number,
@@ -26,18 +27,17 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Password is required"],
-    minLength: 6,
+    minLength: [6, "Password must be at least 6 characters long."],
   },
   passwordConfirm: {
     type: String,
     required: [true, "Confirm your Password"],
-    minLength: 6,
     validate: {
       // this only works on CREATE and SAVE
       validator: function (el) {
         return el === this.password; // abc == abc
       },
-      message: "Passwords are not same.",
+      message: "Password Doesn't Match.",
     },
   },
   passwordChangedAT: Date,
@@ -83,6 +83,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   return false;
 };
 
+// METHODS FOR RESET TOKEN
 userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(3).toString("hex");
 
