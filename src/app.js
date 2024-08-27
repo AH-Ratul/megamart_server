@@ -1,18 +1,33 @@
 const express = require("express");
 const cors = require("cors");
+const cookieparser = require("cookie-parser");
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
 
 const appRouter = require("./routes/routes");
 const globalErrorHandler = require("./controllers/errorController");
 
 const app = express();
 
-// middlewares
-app.use(cors());
-app.use(express.json());
+//GLOBAL MIDDLEWARES
+app.use(helmet());
 
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: "Too many request from this IP, please try again in 1 hour.",
+});
+
+app.use(limiter);
+
+app.use(cors({ origin: ["http://localhost:5173"], credentials: true }));
+app.use(express.json());
+app.use(cookieparser());
+
+// TEST MIDDLEWARE
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  //console.log(req.headers);
+  //console.log(req.cookies);
 
   next();
 });
