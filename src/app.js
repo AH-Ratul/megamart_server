@@ -3,6 +3,7 @@ const cors = require("cors");
 const cookieparser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
 
 const appRouter = require("./routes/routes");
 const globalErrorHandler = require("./controllers/errorController");
@@ -23,6 +24,9 @@ app.use(limiter);
 app.use(cors({ origin: ["http://localhost:5173"], credentials: true }));
 app.use(express.json());
 app.use(cookieparser());
+
+// Data sanitize against NOSQL query injection
+app.use(mongoSanitize());
 
 // TEST MIDDLEWARE
 app.use((req, res, next) => {
