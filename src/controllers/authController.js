@@ -183,8 +183,6 @@ exports.verifyCode = tryCatch(async (req, res, next) => {
   user.isCodeVerified = true;
   await user.save();
 
-  req.email = user.email;
-
   res.status(200).json({
     status: "success",
     message: "Code Verified Successfully",
