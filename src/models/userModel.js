@@ -31,7 +31,6 @@ const userSchema = new mongoose.Schema({
   },
   passwordConfirm: {
     type: String,
-    required: [true, "Confirm your Password"],
     validate: {
       // this only works on CREATE and SAVE
       validator: function (el) {
@@ -43,6 +42,10 @@ const userSchema = new mongoose.Schema({
   passwordChangedAT: Date,
   passwordResetToken: String,
   passwordTokenExpires: Date,
+  isCodeVerified: {
+    type: Boolean,
+    default: false
+  } 
 });
 
 // hashing password before saving user
@@ -85,7 +88,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 
 // METHODS FOR RESET TOKEN
 userSchema.methods.createPasswordResetToken = function () {
-  const resetToken = crypto.randomBytes(3).toString("hex");
+  const resetToken = crypto.randomBytes(2).toString("hex");
 
   this.passwordResetToken = crypto
     .createHash("sha256")
