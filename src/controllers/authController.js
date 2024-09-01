@@ -144,7 +144,7 @@ exports.forgetPassword = tryCatch(async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: "Token Sent to Your Email",
+      message: "Code Sent to Your Email",
     });
   } catch (err) {
     user.passwordResetToken = undefined;
@@ -160,35 +160,64 @@ exports.forgetPassword = tryCatch(async (req, res, next) => {
   }
 });
 
-//---------------- RESET PASSWORD ----------------
-exports.resetPassword = tryCatch(async (req, res, next) => {
+// --------------- VERIFY RESET CODE ------------
+exports.verifyCode = tryCatch(async (req, res, next) => {
   // Get user based on token
   const hashedToken = crypto
     .createHash("sha256")
-    .update(req.params.token)
+    .update(req.body.code)
     .digest("hex");
 
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordTokenExpires: { $gt: Date.now() },
   });
-  // If token has not expoired, and there is user, set the New password
+
+  // If token has not expoired, and there is user, verify
   if (!user) {
-    return next(new AppError("Token is invalid or has expired", 400));
+    return next(new AppError("Code is invalid or expired", 400));
   }
 
-  user.password = req.body.password;
-  user.passwordConfirm = req.body.passwordConfirm;
   user.passwordResetToken = undefined;
   user.passwordTokenExpires = undefined;
+  user.isCodeVerified = true;
   await user.save();
 
-  // Log user in, send jwt
-  const token = signToken(user._id);
+  req.email = user.email;
 
   res.status(200).json({
     status: "success",
-    token,
+    message: "Code Verified Successfully",
+    email: user.email,
+  });
+});
+
+//---------------- RESET PASSWORD ----------------
+exports.resetPassword = tryCatch(async (req, res, next) => {
+  const email = req.body.email;
+
+  const user = await User.findOne({
+    email,
+    isCodeVerified: true,
+  });
+
+  if (!user) {
+    return next(
+      new AppError("Invalid request. Please verify the code first!", 400)
+    );
+  }
+
+  if (req.body.password !== req.body.passwordConfirm) {
+    return next(new AppError("Password doesn't Match", 400));
+  }
+
+  user.password = req.body.password;
+  user.isCodeVerified = false;
+  await user.save();
+
+  res.status(200).json({
+    status: "success",
+    message: "Password Successfully Reset!",
   });
 });
 
