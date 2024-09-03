@@ -18,7 +18,9 @@ const createSendToken = (user, statusCode, message, res) => {
   const token = signToken(user._id, user.email);
 
   const cookieOptions = {
-    expires: new Date(Date.now() + process.env.COOKIE_EXPIRES * 60 * 1000),
+    expires: new Date(
+      Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+    ),
     httpOnly: true,
     sameSite: "none",
   };
@@ -112,7 +114,7 @@ exports.protect = tryCatch(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // check if user still exists
-  const freshUser = await User.findOne({email: decoded.email});
+  const freshUser = await User.findOne({ email: decoded.email });
   if (!freshUser) {
     return next(
       new AppError(
