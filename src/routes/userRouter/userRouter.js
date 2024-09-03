@@ -4,6 +4,7 @@ const userController = require("../../controllers/userController");
 
 userRouter.post("/signup", authController.signup);
 userRouter.post("/login", authController.login);
+userRouter.post("/logout", authController.logout);
 
 userRouter.post("/forgetPassword", authController.forgetPassword);
 userRouter.post("/verifyCode", authController.verifyCode);
@@ -21,7 +22,8 @@ userRouter.patch(
   userController.updateUser
 );
 
-userRouter.get("/get", authController.protect, userController.getUser);
+userRouter.get("/getAll", authController.protect, userController.getUser);
+userRouter.get("/getMe", authController.protect, userController.getMe);
 
 userRouter
   .route("/get/:id")
