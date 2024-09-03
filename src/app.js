@@ -14,8 +14,8 @@ const app = express();
 app.use(helmet());
 
 const limiter = rateLimit({
-  max: 100,
-  windowMs: 60 * 60 * 1000,
+  max: 1000,
+  windowMs: 10 * 60 * 1000,
   message: "Too many request from this IP, please try again in 1 hour.",
 });
 
