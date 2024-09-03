@@ -15,13 +15,31 @@ exports.getUser = tryCatch(async (__, res, next) => {
   const get = await User.find();
 
   if (!get) {
-    next(new AppError("User not found", 404));
+    return next(new AppError("User not found", 404));
   }
+
+  get.password = undefined;
 
   res.status(200).json({
     status: "success",
     results: get.length,
     data: get,
+  });
+});
+
+// -------------- GET ME --------------------
+exports.getMe = tryCatch(async (req, res, next) => {
+  const getme = await User.findOne({ email: req.user.email });
+
+  if (!getme) {
+    return next(new AppError("User not found", 404));
+  }
+
+  getme.password = undefined;
+
+  res.status(200).json({
+    status: "success",
+    data: getme,
   });
 });
 
@@ -32,6 +50,8 @@ exports.getUserById = tryCatch(async (req, res, next) => {
   if (!getById) {
     return next(new AppError("User not found by this ID", 404));
   }
+
+  getById.password = undefined;
 
   res.status(200).json({
     status: "success",
