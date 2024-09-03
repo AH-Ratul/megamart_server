@@ -7,19 +7,20 @@ const AppError = require("../utils/appError");
 const sendEmail = require("../utils/email");
 
 // MANAGE JWT TOKEN
-const signToken = (id) => {
-  return jwt.sign({ id: id }, process.env.JWT_SECRET, {
+const signToken = (id, email) => {
+  return jwt.sign({ id: id, email: email }, process.env.JWT_SECRET, {
     expiresIn: process.env.EXPIRES_IN,
   });
 };
 
+// MANAGE TOKEN WITH COOKIES
 const createSendToken = (user, statusCode, message, res) => {
-  const token = signToken(user._id);
+  const token = signToken(user._id, user.email);
 
   const cookieOptions = {
     expires: new Date(Date.now() + process.env.COOKIE_EXPIRES * 60 * 1000),
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "none",
   };
 
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
@@ -39,7 +40,13 @@ const createSendToken = (user, statusCode, message, res) => {
 };
 
 //------------ SIGN UP ------------
-exports.signup = tryCatch(async (req, res) => {
+exports.signup = tryCatch(async (req, res, next) => {
+  const existsUser = await User.findOne({ email: req.body.email });
+
+  if (existsUser) {
+    return next(new AppError("The email already exists", 400));
+  }
+
   const newUser = await User.create(req.body);
 
   createSendToken(newUser, 201, "User Created", res);
@@ -48,6 +55,7 @@ exports.signup = tryCatch(async (req, res) => {
 //------------ LOG IN ------------
 exports.login = tryCatch(async (req, res, next) => {
   const { email, password } = req.body;
+  console.log();
 
   // check if email and password exists
   if (!email || !password) {
@@ -55,7 +63,7 @@ exports.login = tryCatch(async (req, res, next) => {
   }
 
   // check if user exists and password is correct
-  const user = await User.findOne({ email }); //.select('+password');
+  const user = await User.findOne({ email }).select("+password");
 
   if (!user || !(await user.comparePassword(password))) {
     return next(new AppError("Invalid Email or Password", 401));
@@ -64,6 +72,24 @@ exports.login = tryCatch(async (req, res, next) => {
   // if all ok, send token to client
   createSendToken(user, 200, "Login Successfull", res);
 });
+
+// ----------- LOG OUT -------------------
+exports.logout = (req, res) => {
+  const cookieOptions = {
+    expires: new Date(0),
+    httpOnly: true,
+    sameSite: "none",
+  };
+
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+
+  res.cookie("token", "", cookieOptions);
+
+  res.status(200).json({
+    status: "success",
+    message: "Your are Logged Out!",
+  });
+};
 
 // ---------- TO PROTECT DATA -------------
 exports.protect = tryCatch(async (req, res, next) => {
@@ -74,8 +100,8 @@ exports.protect = tryCatch(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1];
-  } else if (req.cookies.jwt) {
-    token = req.cookies.jwt;
+  } else if (req.cookies.token) {
+    token = req.cookies.token;
   }
 
   if (!token) {
@@ -86,7 +112,7 @@ exports.protect = tryCatch(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // check if user still exists
-  const freshUser = await User.findById(decoded.id);
+  const freshUser = await User.findOne({email: decoded.email});
   if (!freshUser) {
     return next(
       new AppError(
