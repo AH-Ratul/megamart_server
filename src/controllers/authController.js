@@ -57,7 +57,6 @@ exports.signup = tryCatch(async (req, res, next) => {
 //------------ LOG IN ------------
 exports.login = tryCatch(async (req, res, next) => {
   const { email, password } = req.body;
-  console.log();
 
   // check if email and password exists
   if (!email || !password) {
