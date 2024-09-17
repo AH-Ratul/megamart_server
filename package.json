@@ -4,8 +4,8 @@
   "description": "MegaMart e-commerce server",
   "main": "server.js",
   "scripts": {
-    "start:dev": "cross-env NODE_ENV=development nodemon D:/project/megamart/server/src/server.js",
-    "start:prod": "cross-env NODE_ENV=production nodemon D:/project/megamart/server/src/server.js"
+    "start:dev": "cross-env NODE_ENV=development nodemon server.js",
+    "start:prod": "cross-env NODE_ENV=production nodemon server.js"
   },
   "author": "AHR",
   "license": "ISC",
