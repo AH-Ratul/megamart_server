@@ -7,15 +7,19 @@ const AppError = require("../utils/appError");
 const sendEmail = require("../utils/email");
 
 // MANAGE JWT TOKEN
-const signToken = (id, email) => {
-  return jwt.sign({ id: id, email: email }, process.env.JWT_SECRET, {
-    expiresIn: process.env.EXPIRES_IN,
-  });
+const signToken = (id, email, role) => {
+  return jwt.sign(
+    { id: id, email: email, role: role },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.EXPIRES_IN,
+    }
+  );
 };
 
 // MANAGE TOKEN WITH COOKIES
 const createSendToken = (user, statusCode, message, res) => {
-  const token = signToken(user._id, user.email);
+  const token = signToken(user._id, user.email, user.role);
 
   const cookieOptions = {
     expires: new Date(
