@@ -74,6 +74,13 @@ exports.login = tryCatch(async (req, res, next) => {
     return next(new AppError("Invalid Email or Password", 401));
   }
 
+  // If it's an admin request, then check the user's role
+  if (req.body.isAdmin && user.role !== "admin") {
+    return res
+      .status(403)
+      .json({ message: "Unauthorized: Admin access required" });
+  }
+
   // if all ok, send token to client
   createSendToken(user, 200, "Login Successfull", res);
 });
