@@ -6,10 +6,14 @@ const productSchema = new Schema({
     required: [true, "Must contains a Name"],
     unique: true,
   },
+  productId: { type: String },
   brand: { type: String },
   category: { type: String },
+  subCategory: { type: String },
   description: { type: String },
-  productImage: {
+  availability: { type: String },
+  quantity: { type: Number },
+  productImages: {
     type: [String],
     required: [true, "Product must contains a Image"],
   },
