@@ -6,7 +6,7 @@ const productSchema = new Schema({
     required: [true, "Must contains a Name"],
     unique: true,
   },
-  productId: { type: String },
+  productCode: { type: String },
   brand: { type: String },
   category: { type: String },
   subCategory: { type: String },
