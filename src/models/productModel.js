@@ -41,11 +41,11 @@ const productSchema = new Schema({
       },
     },
   ],
-  details: {
-    type: Map,
-    of: Schema.Types.Mixed,
-    required: true,
-  },
+  // details: {
+  //   type: Map,
+  //   of: Schema.Types.Mixed,
+  //   required: true,
+  // },
 });
 
 productSchema.add({
