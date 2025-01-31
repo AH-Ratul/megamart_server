@@ -23,3 +23,13 @@ exports.getProduct = tryCatch(async (req, res) => {
     data: getProducts,
   });
 });
+
+//------------------ GET PRODUCT BY ID -------------
+exports.getProductByID = tryCatch(async (req, res) => {
+  const getById = await Product.findById(req.params.id);
+
+  res.status(200).json({
+    status: "success",
+    data: getById,
+  });
+});
