@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const cartItemSchema = require("./cartModel");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -12,7 +13,7 @@ const userSchema = new mongoose.Schema({
     required: [true, "Email is required"],
     unique: true,
     lowercase: true,
-    validate: [validator.isEmail, 'Please give a valid email.']
+    validate: [validator.isEmail, "Please give a valid email."],
   },
   phone: {
     type: Number,
@@ -44,8 +45,9 @@ const userSchema = new mongoose.Schema({
   passwordTokenExpires: Date,
   isCodeVerified: {
     type: Boolean,
-    default: false
-  } 
+    default: false,
+  },
+  cart: [cartItemSchema],
 });
 
 // hashing password before saving user
