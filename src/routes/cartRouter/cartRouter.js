@@ -7,5 +7,9 @@ cartRouter.delete(
   "/removeFromCart/:userId/:productId",
   cartController.removeItem
 );
+cartRouter.post(
+  "/decreaseQuantity/:userId/:productId",
+  cartController.decreaseQuantity
+);
 
 module.exports = cartRouter;
