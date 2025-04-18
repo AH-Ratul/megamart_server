@@ -4,7 +4,13 @@ const tryCatch = require("../utils/tryCatch");
 //------------------------ ADD TO CART --------------------------------
 exports.addTocart = tryCatch(async (req, res) => {
   const userId = req.params.userId;
-  const { productId, productName, productImages, price, quantity } = req.body;
+  const {
+    _id: productId,
+    productName,
+    productImages,
+    price,
+    quantity,
+  } = req.body;
 
   const user = await User.findById(userId);
 
@@ -50,17 +56,19 @@ exports.removeItem = tryCatch(async (req, res) => {
   res.status(200).json({ message: "Item removed from cart" });
 });
 
+//------------------------ DECREASE QUANTITY ----------------------------
 exports.decreaseQuantity = tryCatch(async (req, res) => {
   const userId = req.params.userId;
   const productId = req.params.productId;
 
-  const user = User.findById(userId);
+  const user = await User.findById(userId);
 
-  const ifItem = user.find((item) => item.productId.equals(productId));
+  const hasItem = user.cart.find((item) => item.productId.equals(productId));
 
-  if (ifItem) {
-    if (ifItem.quantity > 1) {
-      ifItem.quantity -= 1;
+  if (hasItem) {
+    if (hasItem.quantity > 1) {
+      hasItem.quantity -= 1;
+      await user.save();
     }
   }
 
