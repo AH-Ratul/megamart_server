@@ -9,6 +9,7 @@ exports.addTocart = tryCatch(async (req, res) => {
     productName,
     productImages,
     price,
+    discountPrice,
     quantity,
   } = req.body;
 
@@ -26,6 +27,7 @@ exports.addTocart = tryCatch(async (req, res) => {
       productName,
       productImages,
       price,
+      discountPrice,
       quantity,
     });
   }
