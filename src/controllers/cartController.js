@@ -1,11 +1,12 @@
 const User = require("../models/userModel");
+const AppError = require("../utils/appError");
 const tryCatch = require("../utils/tryCatch");
 
 //------------------------ ADD TO CART --------------------------------
-exports.addTocart = tryCatch(async (req, res) => {
+exports.addTocart = tryCatch(async (req, res, next) => {
   const userId = req.params.userId;
   const {
-    _id: productId,
+    productId,
     productName,
     productImages,
     price,
@@ -20,7 +21,7 @@ exports.addTocart = tryCatch(async (req, res) => {
   );
 
   if (existingItem) {
-    existingItem.quantity += quantity || 1;
+    existingItem.quantity += 1;
   } else {
     user.cart.push({
       productId,
@@ -28,7 +29,7 @@ exports.addTocart = tryCatch(async (req, res) => {
       productImages,
       price,
       discountPrice,
-      quantity,
+      quantity:1,
     });
   }
 
