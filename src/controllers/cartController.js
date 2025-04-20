@@ -22,6 +22,8 @@ exports.addTocart = tryCatch(async (req, res, next) => {
 
   if (existingItem) {
     existingItem.quantity += 1;
+    await user.save();
+    return res.status(200).json({ isNew: false });
   } else {
     user.cart.push({
       productId,
@@ -29,13 +31,15 @@ exports.addTocart = tryCatch(async (req, res, next) => {
       productImages,
       price,
       discountPrice,
-      quantity:1,
+      quantity: 1,
     });
   }
 
   await user.save();
 
-  res.status(200).json({ message: "Cart updated", cart: user.cart });
+  res
+    .status(200)
+    .json({ message: "Cart updated", cart: user.cart, isNew: true });
 });
 
 //-------------------- GET CART -------------------------
