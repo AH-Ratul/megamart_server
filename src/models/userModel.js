@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const cartItemSchema = require("./cartModel");
+const addressSchema = require("./addressModel");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -48,6 +49,7 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
   cart: [cartItemSchema],
+  addresses: [addressSchema],
 });
 
 // hashing password before saving user
