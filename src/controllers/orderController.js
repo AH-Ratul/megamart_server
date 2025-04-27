@@ -48,7 +48,7 @@ exports.initiateOrder = tryCatch(async (req, res, next) => {
   } else {
     return next(new AppError("failed to initiate payment"));
   }
-  console.log("Redirecting to: ", GatewayPageURL);
+  console.log("Redirecting to: ", response.GatewayPageURL);
 });
 
 exports.handleSuccess = tryCatch(async (req, res) => {
