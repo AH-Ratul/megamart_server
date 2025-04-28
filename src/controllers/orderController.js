@@ -1,8 +1,10 @@
 const Order = require("../models/orderModel");
+const Product = require("../models/productModel");
 const AppError = require("../utils/appError");
 const sslcz = require("../utils/sslCommerz");
 const tryCatch = require("../utils/tryCatch");
 
+//----------------------------- ORDER INITIATE ------------------------
 exports.initiateOrder = tryCatch(async (req, res, next) => {
   const orderData = req.body;
 
@@ -51,8 +53,34 @@ exports.initiateOrder = tryCatch(async (req, res, next) => {
   console.log("Redirecting to: ", response.GatewayPageURL);
 });
 
+//------------------------- SUCCESS if PAY ----------------------------
 exports.handleSuccess = tryCatch(async (req, res) => {
   const transactionId = req.params.transactionId;
-  await Order.findOneAndUpdate({ transactionId }, { status: "SUCCESS" });
+  const order = await Order.findOneAndUpdate(
+    { transactionId },
+    { status: "SUCCESS" },
+    { new: true }
+  );
+
+  if (!order) {
+    res.status(404).json({ message: "Order not found" });
+  }
+
+  const updatePromises = order.products.map(async (item) => {
+    const product = await Product.findById(item.productId);
+
+    if (product) {
+      const newQty = product.quantity - item.quantity;
+      product.quantity = newQty >= 0 ? newQty : 0;
+
+      if (product.quantity === 0) {
+        product.availability = "Out of Stock";
+      }
+      await product.save();
+    }
+  });
+
+  await Promise.all(updatePromises);
+
   res.redirect(`http://localhost:5173/order/success/${transactionId}`);
 });
