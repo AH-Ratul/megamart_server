@@ -11,7 +11,7 @@ const productSchema = new Schema({
   category: { type: String },
   subCategory: { type: String },
   description: { type: String },
-  availability: { type: String },
+  availability: { type: String, enum: ["In Stock", "Out of Stock"] },
   quantity: { type: Number },
   productImages: {
     type: [String],
