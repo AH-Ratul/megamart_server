@@ -33,3 +33,13 @@ exports.getProductByID = tryCatch(async (req, res) => {
     data: getById,
   });
 });
+
+//------------------------ SEARCH PRODUCTS ----------------------
+exports.searchProduct = tryCatch(async (req, res) => {
+  const keyword = req.query.keyword;
+  const regex = new RegExp(keyword, "i"); // case insensitive
+
+  const products = await Product.find({ productName: regex });
+
+  res.status(200).json(products);
+});
