@@ -43,3 +43,16 @@ exports.searchProduct = tryCatch(async (req, res) => {
 
   res.status(200).json(products);
 });
+
+//------------------- GET PRODUCTS BY CATEGORY -----------------------
+exports.getProductByCategory = tryCatch(async (req, res) => {
+  const { categoryName } = req.params;
+
+  const products = await Product.find({
+    category: {
+      $regex: new RegExp(categoryName, "i"),
+    },
+  });
+
+  res.status(200).json(products);
+});
